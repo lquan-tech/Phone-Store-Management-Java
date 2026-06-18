@@ -307,6 +307,50 @@ END
 GO
 
 -- ============================================================
+-- 9F. Index va View phuc vu dashboard/bao cao
+-- ============================================================
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_HoaDon_NgayBan' AND object_id = OBJECT_ID(N'HoaDon'))
+    CREATE INDEX IX_HoaDon_NgayBan ON HoaDon(NgayBan);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_ChiTietHoaDon_MaMay' AND object_id = OBJECT_ID(N'ChiTietHoaDon'))
+    CREATE INDEX IX_ChiTietHoaDon_MaMay ON ChiTietHoaDon(MaMay);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_PhieuNhap_NgayNhap' AND object_id = OBJECT_ID(N'PhieuNhap'))
+    CREATE INDEX IX_PhieuNhap_NgayNhap ON PhieuNhap(NgayNhap);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_PhieuDichVu_NgayNhan' AND object_id = OBJECT_ID(N'PhieuDichVu'))
+    CREATE INDEX IX_PhieuDichVu_NgayNhan ON PhieuDichVu(NgayNhan);
+GO
+
+CREATE OR ALTER VIEW vw_DoanhThuNgay AS
+SELECT
+    CAST(NgayBan AS DATE) AS Ngay,
+    COUNT(*) AS SoHoaDon,
+    SUM(TongTien) AS DoanhThu
+FROM HoaDon
+GROUP BY CAST(NgayBan AS DATE);
+GO
+
+CREATE OR ALTER VIEW vw_NhapHangNgay AS
+SELECT
+    CAST(NgayNhap AS DATE) AS Ngay,
+    COUNT(*) AS SoPhieuNhap,
+    SUM(TongTien) AS ChiNhap
+FROM PhieuNhap
+GROUP BY CAST(NgayNhap AS DATE);
+GO
+
+CREATE OR ALTER VIEW vw_TonKhoCanhBao AS
+SELECT
+    MaMay, TenMay, HangSX, Gia, SoLuong, Gia * SoLuong AS GiaTriTon
+FROM DienThoai
+WHERE SoLuong <= 5;
+GO
+
+-- ============================================================
 -- 10. Du lieu mau (Sample Data)
 -- ============================================================
 -- Them nhan vien mau
@@ -318,6 +362,19 @@ BEGIN
         (N'NV002', N'Tran Thi Binh',   N'Nhan vien',    N'0912345678', N'Ho Chi Minh', 8000000),
         (N'NV003', N'Le Van Cuong',    N'Nhan vien',    N'0923456789', N'Da Nang',     8000000);
     PRINT N'Da them du lieu mau NhanVien.';
+END
+GO
+
+-- Them nhan vien bo sung
+IF NOT EXISTS (SELECT 1 FROM NhanVien WHERE MaNV = N'NV004')
+BEGIN
+    INSERT INTO NhanVien (MaNV, HoTen, ChucVu, SoDienThoai, DiaChi, LuongCoBan)
+    VALUES
+        (N'NV004', N'Pham Minh Khang',  N'Tu van ban hang', N'0934567890', N'Ho Chi Minh', 9000000),
+        (N'NV005', N'Hoang Thu Ha',     N'Thu ngan',        N'0945678901', N'Ha Noi',      8500000),
+        (N'NV006', N'Do Quang Huy',     N'Ky thuat vien',   N'0956789012', N'Da Nang',     9500000),
+        (N'NV007', N'Nguyen Mai Linh',  N'Kho hang',        N'0967890123', N'Can Tho',     8200000);
+    PRINT N'Da them 4 nhan vien bo sung.';
 END
 GO
 
@@ -334,6 +391,51 @@ BEGIN
         (N'XIR13',   N'Xiaomi 13',               N'Xiaomi',  13990000,  25, N'256GB, Trang'),
         (N'VVS21',   N'Vivo V29',                N'Vivo',    9990000,   30, N'256GB, Tim');
     PRINT N'Da them du lieu mau DienThoai.';
+END
+GO
+
+-- Them khach hang mau
+IF NOT EXISTS (SELECT 1 FROM KhachHang WHERE MaKH = N'KH001')
+BEGIN
+    INSERT INTO KhachHang (MaKH, HoTen, SoDienThoai, Email, DiaChi, DiemTichLuy, GhiChu)
+    VALUES
+        (N'KH001', N'Nguyen Hoang Nam',  N'0971000001', N'nam.nguyen@example.com',   N'Quan 1, TP.HCM',       18, N'Khach than thiet'),
+        (N'KH002', N'Tran My Duyen',     N'0971000002', N'duyen.tran@example.com',   N'Quan 3, TP.HCM',       9,  N'Thich iPhone'),
+        (N'KH003', N'Le Thanh Phong',    N'0971000003', N'phong.le@example.com',     N'Thu Duc, TP.HCM',      12, N'Hay mua phu kien'),
+        (N'KH004', N'Pham Gia Bao',      N'0971000004', N'bao.pham@example.com',     N'Ba Dinh, Ha Noi',      6,  N'Can tu van tra gop'),
+        (N'KH005', N'Vo Ngoc Anh',       N'0971000005', N'anh.vo@example.com',       N'Hai Chau, Da Nang',    21, N'Khach VIP'),
+        (N'KH006', N'Dang Minh Chau',    N'0971000006', N'chau.dang@example.com',    N'Ninh Kieu, Can Tho',   4,  N'Mua cho gia dinh'),
+        (N'KH007', N'Bui Quoc Viet',     N'0971000007', N'viet.bui@example.com',     N'Thanh Xuan, Ha Noi',   15, N'Quan tam Samsung'),
+        (N'KH008', N'Hoang Thuy Linh',   N'0971000008', N'linh.hoang@example.com',   N'Quan 7, TP.HCM',       7,  N'Can bao hanh nhanh'),
+        (N'KH009', N'Do Anh Tuan',       N'0971000009', N'tuan.do@example.com',      N'Go Vap, TP.HCM',       10, N'Khach cong ty'),
+        (N'KH010', N'Nguyen Bao Tran',   N'0971000010', N'tran.nguyen@example.com',  N'Hoan Kiem, Ha Noi',    3,  N'Khach moi'),
+        (N'KH011', N'Trinh Minh Quan',   N'0971000011', N'quan.trinh@example.com',   N'Cam Le, Da Nang',      8,  N'Quan tam Xiaomi'),
+        (N'KH012', N'Vu Hai Yen',        N'0971000012', N'yen.vu@example.com',       N'Binh Thanh, TP.HCM',   19, N'Khach than thiet'),
+        (N'KH013', N'Mai Duc Long',      N'0971000013', N'long.mai@example.com',     N'Cau Giay, Ha Noi',     5,  N'Hay doi may moi'),
+        (N'KH014', N'Lam Phuong Nhi',    N'0971000014', N'nhi.lam@example.com',      N'Tan Binh, TP.HCM',     11, N'Can xuat hoa don'),
+        (N'KH015', N'Phan Thanh Dat',    N'0971000015', N'dat.phan@example.com',     N'Long Bien, Ha Noi',    2,  N'Khach online');
+    PRINT N'Da them 15 khach hang mau.';
+END
+GO
+
+-- Them nha cung cap mau
+IF NOT EXISTS (SELECT 1 FROM NhaCungCap WHERE MaNCC = N'NCC001')
+BEGIN
+    INSERT INTO NhaCungCap (MaNCC, TenNCC, SoDienThoai, Email, DiaChi, GhiChu)
+    VALUES
+        (N'NCC001', N'Apple Authorized Distributor',   N'02873009999', N'sales@apple-dist.vn',   N'TP.HCM', N'Nha phan phoi Apple'),
+        (N'NCC002', N'Samsung Mobile Vietnam',         N'02473008888', N'b2b@samsung.vn',       N'Ha Noi', N'Nha cung cap Samsung'),
+        (N'NCC003', N'FPT Trading Mobile',             N'02873006666', N'mobile@fpt.com.vn',    N'TP.HCM', N'Doi tac nhap hang');
+    PRINT N'Da them du lieu mau NhaCungCap.';
+END
+GO
+
+-- Tai khoan demo: admin / admin123
+IF NOT EXISTS (SELECT 1 FROM TaiKhoan WHERE TenDangNhap = N'admin')
+BEGIN
+    INSERT INTO TaiKhoan (TenDangNhap, MatKhau, VaiTro)
+    VALUES (N'admin', N'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', N'Admin');
+    PRINT N'Da them tai khoan demo admin/admin123.';
 END
 GO
 

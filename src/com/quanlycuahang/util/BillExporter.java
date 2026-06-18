@@ -3,9 +3,11 @@ package com.quanlycuahang.util;
 import com.quanlycuahang.model.ChiTietHoaDon;
 import com.quanlycuahang.model.HoaDon;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -26,7 +28,8 @@ public class BillExporter {
      * @throws IOException neu khong ghi duoc file
      */
     public static void xuatBill(HoaDon hd, String filePath) throws IOException {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath, false))) {
+        try (PrintWriter pw = new PrintWriter(new OutputStreamWriter(
+                new FileOutputStream(filePath, false), StandardCharsets.UTF_8))) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
             String ngayBan = hd.getNgayBan() != null
                 ? hd.getNgayBan().format(dtf)

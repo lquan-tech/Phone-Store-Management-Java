@@ -29,6 +29,8 @@ public class UIUtils {
     public static final Color BG_INPUT      = Color.WHITE;
     public static final Color BG_TABLE_ROW  = Color.WHITE;
     public static final Color BG_TABLE_ALT  = new Color(248, 250, 252);
+    public static final Color SIDEBAR_BG    = new Color(250, 252, 255);
+    public static final Color NAV_ACTIVE_BG = new Color(232, 240, 254);
 
     public static final Color TEXT_PRIMARY   = new Color(15, 23, 42);
     public static final Color TEXT_SECONDARY = new Color(71, 85, 105);

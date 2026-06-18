@@ -109,7 +109,7 @@ public class LoginFrame extends JFrame {
                 // Login successful
                 dispose();
                 SwingUtilities.invokeLater(() -> {
-                    MainApp app = new MainApp();
+                    MainApp app = new MainApp(tk);
                     app.setVisible(true);
                 });
             } else {
